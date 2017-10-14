@@ -3,7 +3,16 @@ package hackgt.food_mood;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
 
     // Reads Google Places API Key from "places_api_key.txt"
     String fileName = "places_api_key.txt";
@@ -19,12 +28,5 @@ public class MainActivity extends AppCompatActivity {
 
         placesApiKey = bufferedReader.readLine();
         bufferedReader.close();
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
     }
 }
