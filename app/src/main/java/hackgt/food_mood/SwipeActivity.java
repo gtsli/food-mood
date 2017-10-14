@@ -46,6 +46,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
+        setContentView(R.layout.activity_swipe);
 
         // Get user input from previous screen
         Intent intent = getIntent();
