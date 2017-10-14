@@ -14,7 +14,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAoT1xT8NHbRvLCHRxNFYyVCiH-w3ozqq4"/>
         <!-- YOU MUST REPLACE android.value WITH A NEW API KEY IF EVER DEPLOYED -->
-        <activity android:name=".SwipeActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
