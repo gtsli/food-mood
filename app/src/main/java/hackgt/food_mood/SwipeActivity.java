@@ -66,7 +66,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
                                            "restaurant", keyword);
     }
 
-    private String[] getPlacesIds(double latitute, double longitude, int radius,
+    private String[] getPlacesIds(double latitude, double longitude, int radius,
                                   String typeOfPlace, String keyword) {
         // Use Nearby Search API to return a JSON of JSONs with place_ids
         String urlString =
