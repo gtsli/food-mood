@@ -32,7 +32,7 @@ public class FavoritesActivityScreen extends AppCompatActivity {
                 randomSendMessage(view);
                 break;
             case R.id.pick_item:
-
+                pickSendMessage(view);
                 break;
         }
         return super.onOptionsItemSelected(item);
