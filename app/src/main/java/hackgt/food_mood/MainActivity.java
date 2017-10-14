@@ -1,8 +1,11 @@
 package hackgt.food_mood;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,6 +25,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     // Main Food Mood swipe screen
     // USE NEXUS 5 API 26 EMULATOR
+    public static final String EXTRA_MESSAGE = "com.example.food-mood.MESSAGE";
 
     private GoogleApiClient mGoogleApiClient;
     private String placesKey;
@@ -113,5 +117,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         }
         return result; // exception, return empty JSON Array
+    }
+
+    /** Called when the user taps the Send button */
+    public void sendMessage(View view) {
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        EditText editText = (EditText) findViewById(R.id.editText);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
     }
 }
