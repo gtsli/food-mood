@@ -87,8 +87,8 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         JSONArray places = listOfPlaces(restaurants);
         Log.d("places json array: ", places.toString());
 
-        String[] places_ids = placesIds(places);
-        // print out all place_ids
+        places_ids = placesIds(places);
+        //print out all place_ids
         for (int i = 0; i < places_ids.length; i++) {
             Log.d("places_ids array elem: ", places_ids.toString());
         }
