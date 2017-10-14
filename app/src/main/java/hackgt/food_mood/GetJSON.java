@@ -32,13 +32,13 @@ public class GetJSON extends AsyncTask<String, Void, JSONObject> {
 
         String line;
         while ((line = br.readLine()) != null) {
-            System.out.println(line + "\n");
+            //System.out.println(line + "\n");
             sb.append(line + "\n");
         }
         br.close();
 
         String jsonString = sb.toString();
-        Log.d("overall wrapper JSON", "JSON: " + jsonString);
+        //Log.d("overall wrapper JSON", "JSON: " + jsonString);
 
         return new JSONObject(jsonString);
     }
@@ -46,7 +46,7 @@ public class GetJSON extends AsyncTask<String, Void, JSONObject> {
     protected JSONObject doInBackground(String... url) {
         try {
             JSONObject query = getJSONObjectFromURL(url[0]);
-            Log.e("test", url[0].toString());
+            //Log.e("test", url[0].toString());
             return query;
         } catch (Exception e) {
             this.exception = e;

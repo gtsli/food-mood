@@ -1,1 +1,1 @@
-include ':app', ':servlet-api'
+include ':app', ':servlet-api', ':java-json'
