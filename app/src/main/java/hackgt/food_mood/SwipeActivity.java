@@ -21,6 +21,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,14 +37,14 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 
     private GoogleApiClient mGoogleApiClient;
     private String placesKey;
-    CollectionPagerAdapter collectionPagerAdapter;
-    ViewPager mViewPager;
+//    CollectionPagerAdapter collectionPagerAdapter;
+//    ViewPager mViewPager;
     private String[] places_ids;
+//    private GoogleMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_swipe);
         setContentView(R.layout.activity_swipe);
 
         // Get user input from previous screen
@@ -64,6 +69,26 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         int radius = 500; // in meters
         places_ids = getPlacesIds(latitude,longitude, radius,
                                            "restaurant", keyword);
+//        // Hook up adapter
+//        collectionPagerAdapter =
+//                new CollectionPagerAdapter(
+//                        getSupportFragmentManager());
+//        mViewPager = (ViewPager) findViewById(R.id.pager);
+//        mViewPager.setAdapter(collectionPagerAdapter);
+//
+//        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+//                .getMap();
+//
+//        if (map!=null){
+//            Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
+//                    .title("Hamburg"));
+//            Marker kiel = map.addMarker(new MarkerOptions()
+//                    .position(KIEL)
+//                    .title("Kiel")
+//                    .snippet("Kiel is cool")
+//                    .icon(BitmapDescriptorFactory
+//                            .fromResource(R.drawable.ic_launcher)));
+//        }
     }
 
     private String[] getPlacesIds(double latitude, double longitude, int radius,
@@ -87,67 +112,60 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         JSONArray places = listOfPlaces(restaurants);
         Log.d("places json array: ", places.toString());
 
-        String[] places_ids = placesIds(places);
+        places_ids = placesIds(places);
         // print out all place_ids
         for (int i = 0; i < places_ids.length; i++) {
             Log.d("places_ids array elem: ", places_ids.toString());
         }
-
-        // Hook up adapter
-        collectionPagerAdapter =
-                new CollectionPagerAdapter(
-                        getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(collectionPagerAdapter);
         return places_ids;
     }
 
-    // Since this is an object collection, use a FragmentStatePagerAdapter,
-    // and NOT a FragmentPagerAdapter.
-    public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
-        public CollectionPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            Fragment fragment = new ObjectFragment();
-            Bundle args = new Bundle();
-            // Our object is just an integer :-P
-            args.putStringArray("placeIDs", places_ids);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return places_ids.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return "OBJECT " + (position + 1);
-        }
-    }
-
-    // Instances of this class are fragments representing a single
-    // object in our collection.
-    public static class ObjectFragment extends Fragment {
-        public static final String ARG_OBJECT = "object";
-
-        @Override
-        public View onCreateView(LayoutInflater inflater,
-                                 ViewGroup container, Bundle savedInstanceState) {
-            // The last two arguments ensure LayoutParams are inflated
-            // properly.
-            View rootView = inflater.inflate(
-                    R.layout.fragment_collection_object, container, false);
-            Bundle args = getArguments();
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText(
-                    Integer.toString(args.getInt(ARG_OBJECT)));
-            return rootView;
-        }
-    }
+//    // Since this is an object collection, use a FragmentStatePagerAdapter,
+//    // and NOT a FragmentPagerAdapter.
+//    public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
+//        public CollectionPagerAdapter(FragmentManager fm) {
+//            super(fm);
+//        }
+//
+//        @Override
+//        public Fragment getItem(int i) {
+//            Fragment fragment = new ObjectFragment();
+//            Bundle args = new Bundle();
+//            // Our object is just an integer :-P
+//            args.putStringArray("placeIDs", places_ids);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return places_ids.length;
+//        }
+//
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            return "OBJECT " + (position + 1);
+//        }
+//    }
+//
+//    // Instances of this class are fragments representing a single
+//    // object in our collection.
+//    public static class ObjectFragment extends Fragment {
+//        public static final String ARG_OBJECT = "object";
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater,
+//                                 ViewGroup container, Bundle savedInstanceState) {
+//            // The last two arguments ensure LayoutParams are inflated
+//            // properly.
+//            View rootView = inflater.inflate(
+//                    R.layout.fragment_collection_object, container, false);
+//            Bundle args = getArguments();
+//            ((TextView) rootView.findViewById(android.R.id.textView)).setText(
+//                    Integer.toString(args.getInt(ARG_OBJECT)));
+//            return rootView;
+//        }
+//    }
 
 
     // Connection failed listener method for
