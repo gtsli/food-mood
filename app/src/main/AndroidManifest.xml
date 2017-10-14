@@ -14,7 +14,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAoT1xT8NHbRvLCHRxNFYyVCiH-w3ozqq4"/>
         <!-- YOU MUST REPLACE android.value WITH A NEW API KEY IF EVER DEPLOYED -->
-        <activity android:name=".MainActivity">
+        <activity android:name=".SwipeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,11 +22,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".DisplayMessageActivity"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".SwipeActivity" >
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".SwipeActivity" />
         </activity>
     </application>
 
