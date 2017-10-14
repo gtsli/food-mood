@@ -1,2 +1,2 @@
 # food-mood
-Tinder for restaurants!
+HackGT 2017: Tinder for restaurants!
