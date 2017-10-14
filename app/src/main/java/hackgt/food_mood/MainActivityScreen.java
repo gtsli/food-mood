@@ -11,14 +11,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivityScreen extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     // Main Food Mood swipe screen
-    public static final String EXTRA_MESSAGE = "com.example.food-mood.MESSAGE";
+//    public static final String EXTRA_MESSAGE = "com.example.food-mood.MESSAGE";
 
     private GoogleApiClient mGoogleApiClient;
     private String placesKey;
@@ -50,14 +45,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             System.out.println
                 ("The LocationServices or Places APIs are unavailable");
         }
-    }
-
-    /** Called when the user taps the Send button */
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
     }
 }
