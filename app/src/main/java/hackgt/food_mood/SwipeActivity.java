@@ -24,6 +24,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 
     private GoogleApiClient mGoogleApiClient;
     private String placesKey;
+    private String[] places_ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         double latitude = 33.776725899999995;
         double longitude = -84.39613039999999;
         int radius = 500; // in meters
-        String[] places_ids = getPlacesIds(latitude,longitude, radius,
+        places_ids = getPlacesIds(latitude,longitude, radius,
                                            "restaurant", keyword);
     }
 
