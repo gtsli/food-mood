@@ -4,6 +4,7 @@ package hackgt.food_mood;
 Samuel Zhang (google api)
 */
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -113,14 +114,14 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
             Fragment fragment = new ObjectFragment();
             Bundle args = new Bundle();
             // Our object is just an integer :-P
-            args.putStringArray("placeIDs", places_i);
+            args.putStringArray("placeIDs", places_ids);
             fragment.setArguments(args);
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 100;
+            return places_ids.length;
         }
 
         @Override
