@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DisplayMessageActivity"></activity>
+        <activity android:name=".FavoritesActivity"></activity>
         <activity android:name=".SwipeActivity"
             android:parentActivityName=".MainActivity" >
             <!-- The meta-data tag is required if you support API level 15 and lower -->

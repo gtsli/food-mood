@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -53,6 +54,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
     private int counter;
     private int placeIndex;
 //    private GoogleMap map;
+    private Place place;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,20 +131,38 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
                     nameField.setText("Name: " + currentName);
                     priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
                     ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
+                    placeIndex++;
+                    place = currentPlace;
 //                    return currentPlace;
+                } else {
+                  // redirect to favorites screen
+                    Intent intent = new Intent(SwipeActivity.this, FavoritesActivity.class);
+                    intent.putExtra("Favorite 1 name", favorites[0].getName().toString());
+                    Log.d(":(", favorites[0].getName().toString());
+                    intent.putExtra("Favorite 1 price", favorites[0].getPriceLevel());
+                    intent.putExtra("Favorite 1 rating", favorites[0].getRating());
+                    intent.putExtra("Favorite 2 name", favorites[1].getName().toString());
+                    intent.putExtra("Favorite 2 price", favorites[1].getPriceLevel());
+                    intent.putExtra("Favorite 2 rating", favorites[1].getRating());
+                    intent.putExtra("Favorite 3 name", favorites[2].getName().toString());
+                    intent.putExtra("Favorite 3 price", favorites[2].getPriceLevel());
+                    intent.putExtra("Favorite 3 rating", favorites[2].getRating());
+                    startActivity(intent);
                 }
             }
         }, 1000, TimeUnit.MILLISECONDS);
-
         return null;
     }
 
-    protected void swipeLeft(View view) {
+    protected void left(View view) {
         newCard();
     }
 
-    protected void swipeRight(View view) {
-        favorites[counter] = newCard();
+    protected void right(View view) {
+        newCard();
+        favorites[counter] = place;
+        Log.d("debugging favorites: ", favorites[counter].getName().toString());
+        counter++;
     }
 
     private String[] getPlacesIds(double latitude, double longitude, int radius,
