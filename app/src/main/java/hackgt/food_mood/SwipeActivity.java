@@ -5,6 +5,7 @@ Samuel Zhang (google api)
 */
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
@@ -36,6 +38,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     // Main Food Mood swipe screen
@@ -111,26 +114,26 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_swipe);
         PendingResult<PlaceBuffer> result = Places.GeoDataApi.getPlaceById(
                 mGoogleApiClient, places_ids);
-        PlaceBuffer placeBuffer; // temp
-        try {
-            placeBuffer = (new NewCard().execute(result)).get();
-
-            if (places_ids.length > 0 && counter < 3) {
-                Place currentPlace = placeBuffer.get(placeIndex);
-                String currentName = currentPlace.getName().toString();
-                int currentPrice = currentPlace.getPriceLevel();
-                float currentRating = currentPlace.getRating();
-                TextView nameField = (TextView) findViewById(R.id.name_tv);
-                TextView priceField = (TextView) findViewById(R.id.price_tv);
-                TextView ratingField = (TextView) findViewById(R.id.rating_tv);
-                nameField.setText("Name: " + currentName);
-                priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
-                ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
-                return currentPlace;
+        result.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(@NonNull PlaceBuffer placeBuffer) {
+                Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
+                if (places_ids.length > 0 && counter < 3) {
+                    Place currentPlace = placeBuffer.get(placeIndex);
+                    String currentName = currentPlace.getName().toString();
+                    int currentPrice = currentPlace.getPriceLevel();
+                    float currentRating = currentPlace.getRating();
+                    TextView nameField = (TextView) findViewById(R.id.name_tv);
+                    TextView priceField = (TextView) findViewById(R.id.price_tv);
+                    TextView ratingField = (TextView) findViewById(R.id.rating_tv);
+                    nameField.setText("Name: " + currentName);
+                    priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
+                    ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
+//                    return currentPlace;
+                }
             }
-        } catch (Exception e) {
-            Log.e("oh my goodness", e.getMessage());
-        }
+        }, 1000, TimeUnit.MILLISECONDS);
+
         return null;
     }
 
