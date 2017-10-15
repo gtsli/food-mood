@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -56,11 +58,17 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 //    private GoogleMap map;
     private Place place;
     private String keyword;
+    SwipeFlingAdapterView flingContainer;
+    ArrayAdapter<Place> arrayAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
+
+        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
         // Get user input from previous screen
         Intent intent = getIntent();
@@ -89,6 +97,100 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         placeIndex = 0;
         favorites = new Place[3];
 
+        //choose your favorite adapter
+        arrayAdapter = new ArrayAdapter<Places>(this, R.layout.item, R.id.helloText, userList);
+
+        //set the listener and the adapter
+        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+        @Override
+        public void removeFirstObjectInAdapter() {
+            // this is the simplest way to delete an object from the Adapter (/AdapterView)
+            Log.d("LIST", "removed object!");
+//                userStringList.remove(0);
+
+            userList.remove(0);
+            userFullRef.removeEventListener(userFullRefListener);
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onLeftCardExit(Object dataObject) {
+            //Do something on the left!
+            //You also have access to the original object.
+            //If you want to use it just cast it (String) dataObject
+//                Toast.makeText(MatchActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+
+            // Do nothing - maybe implement negative scoring in the future?
+        }
+
+        @Override
+        public void onRightCardExit(Object dataObject) {
+//                Toast.makeText(MatchActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+            MatchableUser matchedUser = (MatchableUser) dataObject;
+
+            if (matchedUser.getName().equals("name") || matchedUser.getName().equals("end")) {
+                return;
+            }
+
+//                Log.e("swipe","right");
+
+            DatabaseReference tracksPickRef = database.getReference("tracks-pick/" + currID);
+            for (String track : matchedUser.getTopTracks()) {
+                DatabaseReference trackRef = tracksPickRef.child(track);
+                trackRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("tracks-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            DatabaseReference artistsPickRef = database.getReference("artists-pick/" + currID);
+            for (String artist : matchedUser.getTopArtists()) {
+                DatabaseReference artistRef = artistsPickRef.child(artist);
+                artistRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("artists-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.putExtra("address", matchedUser.getPhoneNumber());
+            smsIntent.setData(Uri.parse("sms:"));
+            smsIntent.putExtra("sms_body", "Hi, " + matchedUser.getName() + ", I found you through Matchify's mind bogglingly awesome algorithm!");
+            startActivity(smsIntent);
+        }
+
         newCard();
 
 //        // Hook up adapter
@@ -112,6 +214,119 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 //                            .fromResource(R.drawable.ic_launcher)));
 //        }
     }
+
+    //choose your favorite adapter
+    arrayAdapter = new ArrayAdapter<MatchableUser>(this, R.layout.item, R.id.helloText, userList);
+
+    //set the listener and the adapter
+        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+        @Override
+        public void removeFirstObjectInAdapter() {
+            // this is the simplest way to delete an object from the Adapter (/AdapterView)
+            Log.d("LIST", "removed object!");
+//                userStringList.remove(0);
+
+            userList.remove(0);
+            userFullRef.removeEventListener(userFullRefListener);
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onLeftCardExit(Object dataObject) {
+            //Do something on the left!
+            //You also have access to the original object.
+            //If you want to use it just cast it (String) dataObject
+//                Toast.makeText(MatchActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+
+            // Do nothing - maybe implement negative scoring in the future?
+        }
+
+        @Override
+        public void onRightCardExit(Object dataObject) {
+//                Toast.makeText(MatchActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+            MatchableUser matchedUser = (MatchableUser) dataObject;
+
+            if (matchedUser.getName().equals("name") || matchedUser.getName().equals("end")) {
+                return;
+            }
+
+//                Log.e("swipe","right");
+
+            DatabaseReference tracksPickRef = database.getReference("tracks-pick/" + currID);
+            for (String track : matchedUser.getTopTracks()) {
+                DatabaseReference trackRef = tracksPickRef.child(track);
+                trackRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("tracks-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            DatabaseReference artistsPickRef = database.getReference("artists-pick/" + currID);
+            for (String artist : matchedUser.getTopArtists()) {
+                DatabaseReference artistRef = artistsPickRef.child(artist);
+                artistRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("artists-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.putExtra("address", matchedUser.getPhoneNumber());
+            smsIntent.setData(Uri.parse("sms:"));
+            smsIntent.putExtra("sms_body", "Hi, " + matchedUser.getName() + ", I found you through Matchify's mind bogglingly awesome algorithm!");
+            startActivity(smsIntent);
+        }
+
+        @Override
+        public void onAdapterAboutToEmpty(int itemsInAdapter) {
+            // Ask for more data here
+//                al.add("XML ".concat(String.valueOf(i)));
+//                arrayAdapter.notifyDataSetChanged();
+//                Log.d("LIST", "notified");
+//                i++;
+            if (itemsInAdapter == 0) {
+                Intent playIntent = new Intent(MatchActivity.this, HomeActivity.class);
+                startActivity(playIntent);
+            }
+        }
+
+        @Override
+        public void onScroll(float v) {
+
+        }
+    });
 
     protected Place newCard() {
         setContentView(R.layout.activity_swipe);
