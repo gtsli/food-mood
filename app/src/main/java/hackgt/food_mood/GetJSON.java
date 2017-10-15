@@ -1,5 +1,9 @@
 package hackgt.food_mood;
 
+/*
+Samuel Zhang
+*/
+
 import android.os.AsyncTask;
 import android.util.Log;
 

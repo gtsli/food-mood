@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/random_item"
+        android:onClick="randomClicked"
         app:showAsAction="always"
         android:title="Random"/>
 
