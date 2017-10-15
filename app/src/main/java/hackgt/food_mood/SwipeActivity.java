@@ -55,6 +55,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
     private int placeIndex;
 //    private GoogleMap map;
     private Place place;
+    private String keyword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +64,8 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Get user input from previous screen
         Intent intent = getIntent();
-        String keyword = intent.getStringExtra(MainActivity.keyword);
-        Log.e("keyword: ", keyword);
+        keyword = intent.getStringExtra(MainActivity.keyword);
+//        Log.e("keyword: ", keyword);
 
         // Create a GoogleApiClient instance
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -84,7 +85,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         places_ids = getPlacesIds(latitude,longitude, radius,
                                            "restaurant", keyword);
         // Loop through places
-        counter = 0;
+        counter = intent.getIntExtra("initialFavorites", 0);
         placeIndex = 0;
         favorites = new Place[3];
 
@@ -119,7 +120,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         result.setResultCallback(new ResultCallback<PlaceBuffer>() {
             @Override
             public void onResult(@NonNull PlaceBuffer placeBuffer) {
-                Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
+//                Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
                 if (places_ids.length > placeIndex && counter < 3) {
                     Place currentPlace = placeBuffer.get(placeIndex);
                     String currentName = currentPlace.getName().toString();
@@ -135,19 +136,28 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
                     place = currentPlace;
 //                    return currentPlace;
                 } else {
-                  // redirect to favorites screen
-                    Intent intent = new Intent(SwipeActivity.this, FavoritesActivity.class);
-                    intent.putExtra("Favorite 1 name", favorites[0].getName().toString());
-                    Log.d(":(", favorites[0].getName().toString());
-                    intent.putExtra("Favorite 1 price", favorites[0].getPriceLevel());
-                    intent.putExtra("Favorite 1 rating", favorites[0].getRating());
-                    intent.putExtra("Favorite 2 name", favorites[1].getName().toString());
-                    intent.putExtra("Favorite 2 price", favorites[1].getPriceLevel());
-                    intent.putExtra("Favorite 2 rating", favorites[1].getRating());
-                    intent.putExtra("Favorite 3 name", favorites[2].getName().toString());
-                    intent.putExtra("Favorite 3 price", favorites[2].getPriceLevel());
-                    intent.putExtra("Favorite 3 rating", favorites[2].getRating());
-                    startActivity(intent);
+                    if (favorites[0] == null || favorites[1] == null || favorites[2] == null) {
+                        mGoogleApiClient.disconnect();
+                        placeBuffer.release();
+                        Intent intent = new Intent(SwipeActivity.this, SwipeActivity.class);
+                        intent.putExtra(keyword, keyword);
+                        intent.putExtra("initialFavorites", counter);
+                        startActivity(intent);
+                    } else {
+                        // redirect to favorites screen
+                        Intent intent = new Intent(SwipeActivity.this, FavoritesActivity.class);
+                        intent.putExtra("Favorite 1 name", favorites[0].getName().toString());
+                        Log.d(":(", favorites[0].getName().toString());
+                        intent.putExtra("Favorite 1 price", favorites[0].getPriceLevel());
+                        intent.putExtra("Favorite 1 rating", favorites[0].getRating());
+                        intent.putExtra("Favorite 2 name", favorites[1].getName().toString());
+                        intent.putExtra("Favorite 2 price", favorites[1].getPriceLevel());
+                        intent.putExtra("Favorite 2 rating", favorites[1].getRating());
+                        intent.putExtra("Favorite 3 name", favorites[2].getName().toString());
+                        intent.putExtra("Favorite 3 price", favorites[2].getPriceLevel());
+                        intent.putExtra("Favorite 3 rating", favorites[2].getRating());
+                        startActivity(intent);
+                    }
                 }
             }
         }, 1000, TimeUnit.MILLISECONDS);
