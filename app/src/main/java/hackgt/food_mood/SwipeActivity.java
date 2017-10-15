@@ -111,7 +111,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_swipe);
         PendingResult<PlaceBuffer> result = Places.GeoDataApi.getPlaceById(
                 mGoogleApiClient, places_ids);
-        PlaceBuffer placeBuffer = result.await();
+        PlaceBuffer placeBuffer = execute(result);
         if (places_ids.length > 0 && counter < 3) {
             Place currentPlace = placeBuffer.get(placeIndex);
             String currentName = currentPlace.getName().toString();
