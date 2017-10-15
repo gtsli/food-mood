@@ -45,6 +45,9 @@ public class FavoritesActivity extends AppCompatActivity {
     private Place[] favorites;
     private String[] places_ids;
     private GoogleApiClient mGoogleApiClient;
+    private String favorite1name;
+    private String favorite2name;
+    private String favorite3name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +55,9 @@ public class FavoritesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         setContentView(R.layout.activity_view_favorites);
 
-        String favorite1name = intent.getStringExtra("Favorite 1 name");
-        String favorite2name = intent.getStringExtra("Favorite 2 name");
-        String favorite3name = intent.getStringExtra("Favorite 3 name");
+        favorite1name = intent.getStringExtra("Favorite 1 name");
+        favorite2name = intent.getStringExtra("Favorite 2 name");
+        favorite3name = intent.getStringExtra("Favorite 3 name");
         int favorite1price = intent.getIntExtra("Favorite 1 price", 0);
         int favorite2price = intent.getIntExtra("Favorite 2 price", 0);
         int favorite3price = intent.getIntExtra("Favorite 3 price", 0);
@@ -105,19 +108,19 @@ public class FavoritesActivity extends AppCompatActivity {
 //    }
 
     /** Called when the user taps the Random button */
-    public void randomClicked(View view) {
+    public void randomClicked(MenuItem item) {
         Intent randomIntent = new Intent(FavoritesActivity.this, DisplayMessageActivity.class);
-        TextView textView1 = (TextView) findViewById(R.id.name1);
-        String message1 = textView1.getText().toString();
-        randomIntent.putExtra("Card 1", message1);
+//        TextView textView1 = (TextView) findViewById(R.id.name1);
+//        String message1 = textView1.getText().toString();
+        randomIntent.putExtra("Card 1", favorite1name);
+//
+//        TextView textView2 = (TextView) findViewById(R.id.name2);
+//        String message2 = textView2.getText().toString();
+        randomIntent.putExtra("Card 2", favorite2name);
 
-        TextView textView2 = (TextView) findViewById(R.id.name2);
-        String message2 = textView2.getText().toString();
-        randomIntent.putExtra("Card 2", message2);
-
-        TextView textView3 = (TextView) findViewById(R.id.name3);
-        String message3 = textView3.getText().toString();
-        randomIntent.putExtra("Card 3", message3);
+//        TextView textView3 = (TextView) findViewById(R.id.name3);
+//        String message3 = textView3.getText().toString();
+        randomIntent.putExtra("Card 3", favorite3name);
         startActivity(randomIntent);
     }
 

@@ -120,7 +120,7 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onResult(@NonNull PlaceBuffer placeBuffer) {
                 Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
-                if (places_ids.length > 0 && counter < 3) {
+                if (places_ids.length > placeIndex && counter < 3) {
                     Place currentPlace = placeBuffer.get(placeIndex);
                     String currentName = currentPlace.getName().toString();
                     int currentPrice = currentPlace.getPriceLevel();
