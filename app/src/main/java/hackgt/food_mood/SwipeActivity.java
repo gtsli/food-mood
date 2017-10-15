@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,7 +20,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -31,6 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import java.util.List;
+
 public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     // Main Food Mood swipe screen
     // USE NEXUS 5 API 26 EMULATOR
@@ -40,12 +46,14 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 //    CollectionPagerAdapter collectionPagerAdapter;
 //    ViewPager mViewPager;
     private String[] places_ids;
+    private Place[] favorites;
+    private int counter;
+    private int placeIndex;
 //    private GoogleMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_swipe);
         setContentView(R.layout.activity_swipe);
 
         // Get user input from previous screen
@@ -70,6 +78,11 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         int radius = 500; // in meters
         places_ids = getPlacesIds(latitude,longitude, radius,
                                            "restaurant", keyword);
+        // Loop through places
+        counter = 0;
+        placeIndex = 0;
+        favorites = new Place[3];
+
 //        // Hook up adapter
 //        collectionPagerAdapter =
 //                new CollectionPagerAdapter(
@@ -90,6 +103,35 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 //                    .icon(BitmapDescriptorFactory
 //                            .fromResource(R.drawable.ic_launcher)));
 //        }
+    }
+
+    protected Place newCard() {
+        setContentView(R.layout.activity_swipe);
+        PendingResult<PlaceBuffer> result = Places.GeoDataApi.getPlaceById(
+                mGoogleApiClient, places_ids);
+        PlaceBuffer placeBuffer = result.await();
+        if (places_ids.length > 0 && counter < 3) {
+            Place currentPlace = placeBuffer.get(placeIndex);
+            String currentName = currentPlace.getName().toString();
+            int currentPrice = currentPlace.getPriceLevel();
+            float currentRating = currentPlace.getRating();
+            TextView nameField = (TextView) findViewById(R.id.name_tv);
+            TextView priceField = (TextView) findViewById(R.id.price_tv);
+            TextView ratingField = (TextView) findViewById(R.id.rating_tv);
+            nameField.setText("Name: " + currentName);
+            priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
+            ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
+            return currentPlace;
+        }
+        return null;
+    }
+
+    protected void swipeLeft(View view) {
+        newCard();
+    }
+
+    protected void swipeRight(View view) {
+        favorites[counter] = newCard();
     }
 
     private String[] getPlacesIds(double latitude, double longitude, int radius,
