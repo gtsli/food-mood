@@ -12,117 +12,79 @@
     tools:layout_editor_absoluteY="0dp"
     tools:layout_editor_absoluteX="0dp" >
 
-  <LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:layout_gravity="bottom"
-    android:weightSum="1">
-    <!-- The card, 70-80% picture, 20-30% text -->
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/swap_linear_layout"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight=".8"
-        android:weightSum="1"
-        tools:context="hackgt.food_mood.MainActivity">
+  <Button
+      android:id="@+id/Left"
+      android:layout_width="0dp"
+      android:layout_height="91dp"
+      android:text="Swipe Left"
+      app:layout_constraintRight_toLeftOf="@+id/Right"
+      tools:layout_constraintRight_creator="1"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="10dp"
+      app:layout_constraintBaseline_toBaselineOf="@+id/Right"
+      tools:layout_constraintBaseline_creator="1"
+      tools:layout_constraintLeft_creator="1"
+      app:layout_constraintLeft_toLeftOf="@+id/cardView" />
 
-      <!-- A CardView that contains a TextView -->
-      <android.support.v7.widget.CardView
+  <android.support.v7.widget.CardView
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      tools:layout_constraintTop_creator="1"
+      tools:layout_constraintRight_creator="1"
+      tools:layout_constraintBottom_creator="1"
+      app:layout_constraintBottom_toTopOf="@+id/Left"
+      android:layout_marginStart="7dp"
+      android:layout_marginEnd="7dp"
+      app:layout_constraintRight_toRightOf="parent"
+      android:layout_marginTop="4dp"
+      tools:layout_constraintLeft_creator="1"
+      android:layout_marginBottom="15dp"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:id="@+id/cardView">
+
+      <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           xmlns:card_view="http://schemas.android.com/apk/res-auto"
-          android:id="@+id/card_view"
-          android:layout_gravity="center"
+          android:layout_height="match_parent"
+          android:layout_width="match_parent"
+          android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/name_tv"
           android:layout_width="fill_parent"
-          android:layout_height="fill_parent"
-          card_view:cardCornerRadius="4dp">
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".7"
-            tools:context="hackgt.food_mood.MainActivity">
+          android:layout_height="wrap_content"
+          android:text="Name: "
+          />
+      <TextView
+          android:id="@+id/price_tv"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Price: "
+          />
+      <TextView
+          android:id="@+id/rating_tv"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Rating: "
+          />
+      </LinearLayout>
 
-          <ImageView
-              android:id="@+id/image_area"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:layout_gravity="center_horizontal"
-              android:layout_alignParentTop="true"
-              android:layout_centerHorizontal="true" />
-        </LinearLayout>
+    <StackView
+        android:id="@+id/image_stack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+  </android.support.v7.widget.CardView>
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
-            android:layout_weight=".3">
-          <TextView
-              android:id="@+id/name_tv"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:layout_gravity="center_horizontal"
-              android:layout_alignParentBottom="true"
-              android:layout_centerHorizontal="true" />
-        <TextView
-            android:id="@+id/price_tv"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-        <TextView
-            android:id="@+id/rating_tv"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
-        </LinearLayout>
-      </android.support.v7.widget.CardView>
-    </LinearLayout>
-
-    <!-- Bottom portion after card -->
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/swap_bottom_layout"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".2"
-        android:weightSum="1"
-        tools:context="hackgt.food_mood.MainActivity">
-
-      <Button
-          android:id="@+id/swipeLeft"
-          android:layout_width="100dp"
-          android:layout_height="fill_parent"
-          android:layout_weight=".5"
-          android:layout_alignParentLeft="true"
-          android:text="Swipe left"
-          android:onClick="swipeLeft">
-      </Button>
-      <Button
-          android:id="@+id/swipeRight"
-          android:layout_width="100dp"
-          android:layout_height="fill_parent"
-          android:layout_weight=".5"
-          android:layout_alignParentRight="true"
-          android:text="Swipe right"
-          android:onClick="swipeRight">
-      </Button>
-    </LinearLayout>
-  </LinearLayout>
+  <Button
+      android:id="@+id/Right"
+      android:layout_width="181dp"
+      android:layout_height="90dp"
+      android:text="Swipe Right"
+      tools:layout_constraintRight_creator="1"
+      tools:layout_constraintBottom_creator="1"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_marginEnd="21dp"
+      app:layout_constraintRight_toRightOf="parent"
+      android:layout_marginBottom="17dp" />
 </android.support.constraint.ConstraintLayout>

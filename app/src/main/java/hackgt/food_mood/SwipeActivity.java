@@ -83,6 +83,8 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         placeIndex = 0;
         favorites = new Place[3];
 
+        newCard();
+
 //        // Hook up adapter
 //        collectionPagerAdapter =
 //                new CollectionPagerAdapter(
