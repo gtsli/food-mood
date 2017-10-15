@@ -111,19 +111,25 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_swipe);
         PendingResult<PlaceBuffer> result = Places.GeoDataApi.getPlaceById(
                 mGoogleApiClient, places_ids);
-        PlaceBuffer placeBuffer = execute(result);
-        if (places_ids.length > 0 && counter < 3) {
-            Place currentPlace = placeBuffer.get(placeIndex);
-            String currentName = currentPlace.getName().toString();
-            int currentPrice = currentPlace.getPriceLevel();
-            float currentRating = currentPlace.getRating();
-            TextView nameField = (TextView) findViewById(R.id.name_tv);
-            TextView priceField = (TextView) findViewById(R.id.price_tv);
-            TextView ratingField = (TextView) findViewById(R.id.rating_tv);
-            nameField.setText("Name: " + currentName);
-            priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
-            ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
-            return currentPlace;
+        PlaceBuffer placeBuffer; // temp
+        try {
+            placeBuffer = (new NewCard().execute(result)).get();
+
+            if (places_ids.length > 0 && counter < 3) {
+                Place currentPlace = placeBuffer.get(placeIndex);
+                String currentName = currentPlace.getName().toString();
+                int currentPrice = currentPlace.getPriceLevel();
+                float currentRating = currentPlace.getRating();
+                TextView nameField = (TextView) findViewById(R.id.name_tv);
+                TextView priceField = (TextView) findViewById(R.id.price_tv);
+                TextView ratingField = (TextView) findViewById(R.id.rating_tv);
+                nameField.setText("Name: " + currentName);
+                priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
+                ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
+                return currentPlace;
+            }
+        } catch (Exception e) {
+            Log.e("oh my goodness", e.getMessage());
         }
         return null;
     }
