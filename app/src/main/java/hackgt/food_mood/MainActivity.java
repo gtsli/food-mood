@@ -23,6 +23,7 @@ public class MainActivity  extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.editText);
         String message = editText.getText().toString();
         intent.putExtra(keyword, message);
+        intent.putExtra("initialFavorites", 0);
         startActivity(intent);
     }
 

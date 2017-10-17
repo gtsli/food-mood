@@ -14,6 +14,7 @@
 
   <Button
       android:id="@+id/Left"
+      android:onClick="left"
       android:layout_width="0dp"
       android:layout_height="91dp"
       android:text="Swipe Left"
@@ -78,6 +79,7 @@
 
   <Button
       android:id="@+id/Right"
+      android:onClick="right"
       android:layout_width="181dp"
       android:layout_height="90dp"
       android:text="Swipe Right"

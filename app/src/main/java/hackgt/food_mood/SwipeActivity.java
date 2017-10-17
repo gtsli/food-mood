@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -53,16 +56,24 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
     private int counter;
     private int placeIndex;
 //    private GoogleMap map;
+    private Place place;
+    private String keyword;
+    SwipeFlingAdapterView flingContainer;
+    ArrayAdapter<Place> arrayAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
 
+        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
+
         // Get user input from previous screen
         Intent intent = getIntent();
-        String keyword = intent.getStringExtra(MainActivity.keyword);
-        Log.e("keyword: ", keyword);
+        keyword = intent.getStringExtra(MainActivity.keyword);
+//        Log.e("keyword: ", keyword);
 
         // Create a GoogleApiClient instance
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -82,9 +93,103 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         places_ids = getPlacesIds(latitude,longitude, radius,
                                            "restaurant", keyword);
         // Loop through places
-        counter = 0;
+        counter = intent.getIntExtra("initialFavorites", 0);
         placeIndex = 0;
         favorites = new Place[3];
+
+        //choose your favorite adapter
+        arrayAdapter = new ArrayAdapter<Places>(this, R.layout.item, R.id.helloText, userList);
+
+        //set the listener and the adapter
+        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+        @Override
+        public void removeFirstObjectInAdapter() {
+            // this is the simplest way to delete an object from the Adapter (/AdapterView)
+            Log.d("LIST", "removed object!");
+//                userStringList.remove(0);
+
+            userList.remove(0);
+            userFullRef.removeEventListener(userFullRefListener);
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onLeftCardExit(Object dataObject) {
+            //Do something on the left!
+            //You also have access to the original object.
+            //If you want to use it just cast it (String) dataObject
+//                Toast.makeText(MatchActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+
+            // Do nothing - maybe implement negative scoring in the future?
+        }
+
+        @Override
+        public void onRightCardExit(Object dataObject) {
+//                Toast.makeText(MatchActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+            MatchableUser matchedUser = (MatchableUser) dataObject;
+
+            if (matchedUser.getName().equals("name") || matchedUser.getName().equals("end")) {
+                return;
+            }
+
+//                Log.e("swipe","right");
+
+            DatabaseReference tracksPickRef = database.getReference("tracks-pick/" + currID);
+            for (String track : matchedUser.getTopTracks()) {
+                DatabaseReference trackRef = tracksPickRef.child(track);
+                trackRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("tracks-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            DatabaseReference artistsPickRef = database.getReference("artists-pick/" + currID);
+            for (String artist : matchedUser.getTopArtists()) {
+                DatabaseReference artistRef = artistsPickRef.child(artist);
+                artistRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("artists-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.putExtra("address", matchedUser.getPhoneNumber());
+            smsIntent.setData(Uri.parse("sms:"));
+            smsIntent.putExtra("sms_body", "Hi, " + matchedUser.getName() + ", I found you through Matchify's mind bogglingly awesome algorithm!");
+            startActivity(smsIntent);
+        }
 
         newCard();
 
@@ -110,6 +215,119 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
 //        }
     }
 
+    //choose your favorite adapter
+    arrayAdapter = new ArrayAdapter<MatchableUser>(this, R.layout.item, R.id.helloText, userList);
+
+    //set the listener and the adapter
+        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+        @Override
+        public void removeFirstObjectInAdapter() {
+            // this is the simplest way to delete an object from the Adapter (/AdapterView)
+            Log.d("LIST", "removed object!");
+//                userStringList.remove(0);
+
+            userList.remove(0);
+            userFullRef.removeEventListener(userFullRefListener);
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onLeftCardExit(Object dataObject) {
+            //Do something on the left!
+            //You also have access to the original object.
+            //If you want to use it just cast it (String) dataObject
+//                Toast.makeText(MatchActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+
+            // Do nothing - maybe implement negative scoring in the future?
+        }
+
+        @Override
+        public void onRightCardExit(Object dataObject) {
+//                Toast.makeText(MatchActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+            MatchableUser matchedUser = (MatchableUser) dataObject;
+
+            if (matchedUser.getName().equals("name") || matchedUser.getName().equals("end")) {
+                return;
+            }
+
+//                Log.e("swipe","right");
+
+            DatabaseReference tracksPickRef = database.getReference("tracks-pick/" + currID);
+            for (String track : matchedUser.getTopTracks()) {
+                DatabaseReference trackRef = tracksPickRef.child(track);
+                trackRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("tracks-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            DatabaseReference artistsPickRef = database.getReference("artists-pick/" + currID);
+            for (String artist : matchedUser.getTopArtists()) {
+                DatabaseReference artistRef = artistsPickRef.child(artist);
+                artistRef.runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData currentData) {
+                        if (currentData.getValue() == null) {
+                            currentData.setValue(Integer.valueOf(1));
+                        } else {
+                            Integer result = (Integer.parseInt(currentData.getValue().toString()));
+                            result = new Integer(result.intValue() + 1);
+//                                Log.e("artists-pick", result.toString());
+                            currentData.setValue(result);
+                        }
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+            }
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.putExtra("address", matchedUser.getPhoneNumber());
+            smsIntent.setData(Uri.parse("sms:"));
+            smsIntent.putExtra("sms_body", "Hi, " + matchedUser.getName() + ", I found you through Matchify's mind bogglingly awesome algorithm!");
+            startActivity(smsIntent);
+        }
+
+        @Override
+        public void onAdapterAboutToEmpty(int itemsInAdapter) {
+            // Ask for more data here
+//                al.add("XML ".concat(String.valueOf(i)));
+//                arrayAdapter.notifyDataSetChanged();
+//                Log.d("LIST", "notified");
+//                i++;
+            if (itemsInAdapter == 0) {
+                Intent playIntent = new Intent(MatchActivity.this, HomeActivity.class);
+                startActivity(playIntent);
+            }
+        }
+
+        @Override
+        public void onScroll(float v) {
+
+        }
+    });
+
     protected Place newCard() {
         setContentView(R.layout.activity_swipe);
         PendingResult<PlaceBuffer> result = Places.GeoDataApi.getPlaceById(
@@ -117,8 +335,8 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
         result.setResultCallback(new ResultCallback<PlaceBuffer>() {
             @Override
             public void onResult(@NonNull PlaceBuffer placeBuffer) {
-                Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
-                if (places_ids.length > 0 && counter < 3) {
+//                Log.d("lichard49", "WE HAVE THE ANSWER RAWR " + placeBuffer);
+                if (places_ids.length > placeIndex && counter < 3) {
                     Place currentPlace = placeBuffer.get(placeIndex);
                     String currentName = currentPlace.getName().toString();
                     int currentPrice = currentPlace.getPriceLevel();
@@ -129,20 +347,47 @@ public class SwipeActivity extends AppCompatActivity implements GoogleApiClient.
                     nameField.setText("Name: " + currentName);
                     priceField.setText("Price (on a scale from 1 to 4): " + currentPrice);
                     ratingField.setText("Rating (on a scale from 1 to 5: " + currentRating);
+                    placeIndex++;
+                    place = currentPlace;
 //                    return currentPlace;
+                } else {
+                    if (favorites[0] == null || favorites[1] == null || favorites[2] == null) {
+                        mGoogleApiClient.disconnect();
+                        placeBuffer.release();
+                        Intent intent = new Intent(SwipeActivity.this, SwipeActivity.class);
+                        intent.putExtra(keyword, keyword);
+                        intent.putExtra("initialFavorites", counter);
+                        startActivity(intent);
+                    } else {
+                        // redirect to favorites screen
+                        Intent intent = new Intent(SwipeActivity.this, FavoritesActivity.class);
+                        intent.putExtra("Favorite 1 name", favorites[0].getName().toString());
+                        Log.d(":(", favorites[0].getName().toString());
+                        intent.putExtra("Favorite 1 price", favorites[0].getPriceLevel());
+                        intent.putExtra("Favorite 1 rating", favorites[0].getRating());
+                        intent.putExtra("Favorite 2 name", favorites[1].getName().toString());
+                        intent.putExtra("Favorite 2 price", favorites[1].getPriceLevel());
+                        intent.putExtra("Favorite 2 rating", favorites[1].getRating());
+                        intent.putExtra("Favorite 3 name", favorites[2].getName().toString());
+                        intent.putExtra("Favorite 3 price", favorites[2].getPriceLevel());
+                        intent.putExtra("Favorite 3 rating", favorites[2].getRating());
+                        startActivity(intent);
+                    }
                 }
             }
         }, 1000, TimeUnit.MILLISECONDS);
-
         return null;
     }
 
-    protected void swipeLeft(View view) {
+    protected void left(View view) {
         newCard();
     }
 
-    protected void swipeRight(View view) {
-        favorites[counter] = newCard();
+    protected void right(View view) {
+        newCard();
+        favorites[counter] = place;
+        Log.d("debugging favorites: ", favorites[counter].getName().toString());
+        counter++;
     }
 
     private String[] getPlacesIds(double latitude, double longitude, int radius,
